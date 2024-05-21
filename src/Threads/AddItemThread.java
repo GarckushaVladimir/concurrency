@@ -14,6 +14,9 @@ public class AddItemThread extends Thread {
 
     @Override
     public void run() {
-        cart.addItem(item);
+        synchronized (cart) {
+            cart.addItem(item);
+            cart.notifyAll(); // Уведомляем все потоки, что элемент добавлен
+        }
     }
 }

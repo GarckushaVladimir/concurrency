@@ -9,7 +9,7 @@ public class Calculator {
         this.costCalculateStrategy = costCalculateStrategy;
     }
 
-    public double calculateCost(Buyer buyer) {
+    public synchronized double calculateCost(Buyer buyer) {
         return costCalculateStrategy.calculateCost(buyer);
     }
 }

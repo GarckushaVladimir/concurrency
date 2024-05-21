@@ -6,7 +6,7 @@ import People.Buyer;
 
 public class ImprovedCostCalculateStrategy implements CostCalculateStrategy {
     @Override
-    public double calculateCost(Buyer buyer) {
+    public synchronized double calculateCost(Buyer buyer) {
         StoreCart cart = buyer.getCart();
 
         CostCalculatorVisitor visitor = new CostCalculatorVisitor();

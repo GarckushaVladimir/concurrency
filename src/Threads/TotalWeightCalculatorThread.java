@@ -14,9 +14,15 @@ public class TotalWeightCalculatorThread extends Thread {
 
     @Override
     public void run() {
-        for (Item item : cart) {
-            totalWeight += item.getWeight();
+        synchronized (cart) {
+            while (cart.iterator().hasNext()) {
+                for (Item item : cart) {
+                    totalWeight += item.getWeight();
+                }
+                break;
+            }
         }
+
     }
 
     public double getTotalWeight() {

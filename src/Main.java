@@ -11,6 +11,7 @@ import People.Person; // подключили класс человек
 import Cart.StoreCart; // подключили класс чек
 import Threads.AddItemThread;
 import Threads.CostCalculatorThread;
+import Threads.TotalWeightCalculatorThread;
 
 public class Main {
     public static void main(String[] args) {
@@ -35,11 +36,14 @@ public class Main {
         addItemThread2.start();
 
         try {
-            addItemThread1.join();
-            addItemThread2.join();
+            addItemThread1.join(); // Ждем завершения потока
+            addItemThread2.join();  // Ждем завершения потока
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+
+        TotalWeightCalculatorThread weightCalculatorThread = new TotalWeightCalculatorThread(cart);
+        weightCalculatorThread.start();
 
         // Создаем покупателя
         Person person = new Person(cart);
@@ -59,8 +63,9 @@ public class Main {
         improvedCostThread.start();
 
         try {
-            simpleCostThread.join();
-            improvedCostThread.join();
+            weightCalculatorThread.join(); // Ждем завершения потока
+            simpleCostThread.join(); // Ждем завершения потока
+            improvedCostThread.join(); // Ждем завершения потока
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -69,6 +74,6 @@ public class Main {
         System.out.println("Total cost with SimpleCalculator: " + simpleCostThread.getResult());
         System.out.println("Total cost with ImprovedCalculator: " + improvedCostThread.getResult());
 
-        System.out.println("Total weight: " + cart.getTotalWeight());
+        System.out.println("Total weight: " + weightCalculatorThread.getTotalWeight());
     }
 }

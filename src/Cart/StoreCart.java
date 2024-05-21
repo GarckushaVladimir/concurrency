@@ -6,7 +6,6 @@ package Cart;
 */
 
 import Items.Item; // подключили интерфейс товар
-import Threads.TotalWeightCalculatorThread;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -25,21 +24,28 @@ public class StoreCart implements Iterable<Item>{
 
     public synchronized void addItem(Item item) {
         items.add(item);
+        notifyAll(); // Уведомляем все потоки, что элемент добавлен
     }
 
     @Override
-    public Iterator<Item> iterator(){
+    public synchronized Iterator<Item> iterator(){
         return new StoreCartIterator(items);
     }
 
-    public double getTotalWeight() {
-        TotalWeightCalculatorThread weightThread = new TotalWeightCalculatorThread(this);
-        weightThread.start();
-        try {
-            weightThread.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+    public synchronized double getTotalWeight() {
+        while (items.isEmpty()) {
+            try {
+                wait(); // Ожидаем, пока корзина не станет непустой
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                return 0;
+            }
         }
-        return weightThread.getTotalWeight();
+
+        double totalWeight = 0;
+        for (Item item : items) {
+            totalWeight += item.getWeight();
+        }
+        return totalWeight;
     }
 }

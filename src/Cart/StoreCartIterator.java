@@ -19,12 +19,12 @@ public class StoreCartIterator implements Iterator<Item> {
     }
 
     @Override
-    public boolean hasNext() {
+    public synchronized boolean hasNext() {
         return index < items.size();
     }
 
     @Override
-    public Item next() {
+    public synchronized Item next() {
         if (!hasNext()){
             throw new NoSuchElementException();
         }
