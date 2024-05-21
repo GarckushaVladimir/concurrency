@@ -6,6 +6,8 @@ package Cart;
 */
 
 import Items.Item; // подключили интерфейс товар
+import Threads.TotalWeightCalculatorThread;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -17,11 +19,11 @@ public class StoreCart implements Iterable<Item>{
         this.items = new ArrayList<>();
     }
 
-    public void removeItem(Item item) {
+    public synchronized void removeItem(Item item) {
         items.remove(item);
     }
 
-    public void addItem(Item item) {
+    public synchronized void addItem(Item item) {
         items.add(item);
     }
 
@@ -31,10 +33,13 @@ public class StoreCart implements Iterable<Item>{
     }
 
     public double getTotalWeight() {
-        double totalWeight = 0;
-        for (Item item : items) {
-            totalWeight += item.getWeight();
+        TotalWeightCalculatorThread weightThread = new TotalWeightCalculatorThread(this);
+        weightThread.start();
+        try {
+            weightThread.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
-        return totalWeight;
+        return weightThread.getTotalWeight();
     }
 }
